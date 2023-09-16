@@ -1,16 +1,5 @@
-# save_world
+# Atlas Aware
 
-A new Flutter project.
+This is our submission to HackCMU 2023. Team: Noel Dsouza, Rucha Kulkarni, Krisha Bhambani, Harshit Mehrotra
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Atlas Aware is a gamified learning tool for children to explore environmental factors like temperature and air quality across the globe. It uses the power of satellite data and generative AI to educate children.
