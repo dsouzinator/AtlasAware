@@ -55,7 +55,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  int _selectedIndex = 0;
 
 
   @override
@@ -157,9 +157,97 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.leaderboard), label: "Leaderboard"),
+          ],
+          currentIndex: _selectedIndex,
+          onTap: (int index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+            if (index == 0){
+                    MyHomePage(
+                        title:"Home Page"
+                    );
+            }
+            else if (index == 1){
+              Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => LeaderboardPage(
+                      )),
+                    );
+            }
+          },
+          ),
     );
   }
 }
+
+
+class LeaderboardPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Leaderboard'),
+      ),
+      body: Column(
+        children: [
+          // Heading row with columns: User ID, Score, Rank
+          Container(
+            color: Colors.blue, // Background color for the heading row
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                // Text('     ', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                Text('User ID', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                Text('Streak(Days)', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+              ],
+            ),
+          ),
+          // List of leaderboard entries
+          LeaderboardEntry(rank: 1, userId: 'agatha', score: 10),
+          LeaderboardEntry(rank: 2, userId: 'martin', score: 8),
+          LeaderboardEntry(rank: 3, userId: 'joanne', score: 7),
+          LeaderboardEntry(rank: 4, userId: 'tommy', score: 7),
+          LeaderboardEntry(rank: 5, userId: 'harry', score: 5),
+          LeaderboardEntry(rank: 6, userId: 'finn', score: 3),
+
+        ],
+      ),
+    );
+  }
+}
+
+class LeaderboardEntry extends StatelessWidget {
+  final int rank;
+  final String userId;
+  final int score;
+
+  LeaderboardEntry({required this.rank, required this.userId, required this.score});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: rank % 2 == 0 ? Colors.white : Colors.grey[200], // Alternating row colors
+      child: ListTile(
+          title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                // Text('     ', style: TextStyle(color: Colors.black)),
+                Text(userId, style: TextStyle(color: Colors.black)),
+                Text(score.toString(), style: TextStyle(color: Colors.black)),
+              ],
+            ),
+      ),
+    );
+  }
+}
+
+
 
 class WorldMapPage extends StatelessWidget {
   final String title;
@@ -229,15 +317,15 @@ class _SomeContainer extends StatelessWidget {
                   )),
               );
           }
-          else if ((details.globalPosition.dx<180) & (details.globalPosition.dx > 30) &
-          (details.globalPosition.dy<480) & (details.globalPosition.dy>350) &
+          else if ((details.globalPosition.dx<200) & (details.globalPosition.dx > 10) &
+          (details.globalPosition.dy<550) & (details.globalPosition.dy>300) &
           (title=="Air Quality"))
           {
             Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => LocalMapPage(
                     title:title,
-                    region:"California"
+                    region:"Orleans, California"
                   )),
               );
           }
@@ -264,21 +352,25 @@ class _LocalMapPageState extends State<LocalMapPage>{
   String titlePath = "";
   double minVal = -40;
   double maxVal = 60;
+  String prompt = "";
 
   @override
   void initState() {
     super.initState();
     if((widget.title=="Temperature") & (widget.region=="Phoenix")){
       titlePath = 'PhoenixTempQuestion.png';
+      prompt = 'Guess the predominant maximum ${widget.title.toLowerCase()} in and around ${widget.region}!';
 
     }
     else if((widget.title=="Temperature") & (widget.region=="Mumbai")){
       titlePath = 'MumbaiTempQuestion.png';
+      prompt = 'Guess the predominant maximum ${widget.title.toLowerCase()} in and around ${widget.region}!';
     }
-    else if((widget.title=="Air Quality") & (widget.region=="California")){
+    else if((widget.title=="Air Quality") & (widget.region=="Orleans, California")){
       titlePath = 'CaliCAQIQuestion.jpeg';
       minVal = 0;
       maxVal = 200;
+      prompt = 'Guess the current ${widget.title.toLowerCase()} CAQI in and around ${widget.region}!';
     }
   }
 
@@ -303,7 +395,7 @@ class _LocalMapPageState extends State<LocalMapPage>{
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'Guess the predominant maximum ${widget.title.toLowerCase()} in and around ${widget.region}!',
+              prompt,
               style: TextStyle(fontSize: 40,
               color: Colors.white
               ),
@@ -335,8 +427,8 @@ class _LocalMapPageState extends State<LocalMapPage>{
             ),
             // submitButton(),
             Container(
-                width: 500,
-                height: 100,
+                width: 400,
+                height: 50,
                 child: ElevatedButton(
                   onPressed: () {
                     // Add your code here for the third button
@@ -374,11 +466,15 @@ class ResultPage extends StatelessWidget {
   Widget build(BuildContext context) {
     String titlePath = "";
     String message = "";
+    String education = "";
+    double height = 700;
+    double width = 700;
     if ((title=="Temperature") & (region=="Phoenix"))
     {
       if(value<32)
       {
         message = "This region is hotter than you think!";
+        
       }
       else if(value>42)
       {
@@ -389,6 +485,7 @@ class ResultPage extends StatelessWidget {
         message = "You are right!";
       }
       titlePath = 'PhoenixTempTruth.png';
+      education = "Compared to neighboring states like California and Nevada, Phoenix, Arizona generally experiences hotter and drier weather, especially during the summer months. Fall in Phoenix is characterized by a gradual cooling from the scorching summer heat. But you can still expect high temperatures around 35°C-40°C.";
 
     }
     else if ((title=="Temperature") & (region=="Mumbai"))
@@ -406,9 +503,10 @@ class ResultPage extends StatelessWidget {
         message = "You are right!";
       }
       titlePath = 'MumbaiTempTruth.png';
+      education = "Despite being one of the busiest cities in India, Mumbai generally experiences more moderate weather due to its coastal location along the Arabian Sea. September starts with warm and humid conditions, with daytime highs ranging from 25°C to 30°C.";
 
     }
-    else if ((title=="Air Quality") & (region=="California"))
+    else if ((title=="Air Quality") & (region=="Orleans, California"))
     {
       if (value<75)
       {
@@ -423,12 +521,15 @@ class ResultPage extends StatelessWidget {
         message = "You are right! ";
       }
       titlePath = 'CaliCAQITruth.jpeg';
-
+      education = "Orleans and neighboring areas have particularly poor air quality because of ongoing fires in the region. Such ‘unhealthy’ air quality makes groups like children, the elderly, pregnant people, and people with cardiac and pulmonary diseases particularly susceptible to health impacts. Residents are recommended to wear a mask, run an air purifier, keep windows closed to avoid dirty outdoor air, and avoid outdoor exercise.";
+      height = 600;
+      width = 600;
     }
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Result'),
+
       ),
       body: Container(
           decoration: BoxDecoration( 
@@ -453,12 +554,21 @@ class ResultPage extends StatelessWidget {
             ),
             Image.asset(
               'assets/images/${titlePath}', // Replace with your image asset path
-              width: 700, // Adjust image size as needed
-              height: 700,
+              width: width, // Adjust image size as needed
+              height: height,
+
             ),
+            Text(
+              education,
+              style: TextStyle(fontSize: 25,
+              color: Colors.white),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 32),
+
             Container(
-                width: 500,
-                height: 100,
+                width: 400,
+                height: 50,
                 child: ElevatedButton(
                   onPressed: () {
                     // Add your code here for the third button
